@@ -1,14 +1,17 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./page/Login";
+import Login from "./pages/Login";
+import Template from "./Template";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-      </Routes>
+      <Template>
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
+      </Template>
     </BrowserRouter>
   );
 }
