@@ -6,14 +6,24 @@ export const Wrapper = styled.section`
   flex-direction: column;
   align-self: center;
   text-align: center;
+
+  & input{
+    margin-bottom: 16px;
+  }
 `;
 
-export const Form = styled.form`
+export const InputWrapper = styled.div`
+  margin-top: 48px;
+  height: 163px;
 `;
 
 export const Text = styled.h2`
   font-size: 32px;
   color: #cdfc51;
+`;
+
+export const ErrorText = styled.span`
+  color: #ff675d;
 `;
 
 export const CustomLink = styled(Link)`
