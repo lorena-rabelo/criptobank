@@ -11,7 +11,6 @@ const Input = ({
   hasError,
   errorMessage,
   onChange,
-
   ...restAttributes
 }) => {
   return (

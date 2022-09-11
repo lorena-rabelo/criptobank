@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Input = styled.input`
   background-color: transparent;
-  width: 300px;
+  width: 100%;
   height: 48px;
   border: 2px solid #cdfc51;
   border-radius: 24px;
@@ -16,6 +16,5 @@ export const Input = styled.input`
 `;
 
 export const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+    position: relative;
 `;
