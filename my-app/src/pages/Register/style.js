@@ -1,5 +1,5 @@
 import styled from "styled-components";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Input from "../../components/Input";
 
 export const Wrapper = styled.section`
@@ -20,7 +20,6 @@ export const Text = styled.h2`
 export const InputWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  /* grid-template-rows: 1fr 1fr; */
   gap: 24px;
   margin-bottom: 40px;
 `;
@@ -78,9 +77,8 @@ export const ConfirmPassword = styled.div`
 `;
 
 
-// export const CustomLink = styled(Link)`
-//   text-decoration: none;
-//   color: #cdfc51;
-//   font-size: 18px;
-//   margin-top: 16px;
-// `;
+export const CustomLink = styled.a`
+  text-decoration: none;
+  color: #cdfc51;
+  font-size: 14px;
+`;
