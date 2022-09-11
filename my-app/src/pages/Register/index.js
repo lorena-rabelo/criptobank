@@ -38,6 +38,11 @@ const Register = () => {
     setState(uf);
   };
 
+  const validatePassword = () => {
+    if (password !== confirmPassword) console.log("wrong");
+    return
+  };
+
   return (
     <S.Wrapper>
       <S.Form onSubmit={handleSubmit}>
@@ -92,8 +97,7 @@ const Register = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {" "}
-              Nao sei meu cep{" "}
+              Nao sei meu cep
             </S.CustomLink>
           </S.Cep>
           <S.Address>
@@ -161,6 +165,7 @@ const Register = () => {
               placeholder="repita a senha"
               value={confirmPassword}
               onChange={({ target }) => setConfirmPassword(target.value)}
+              onBlur={validatePassword}
             />
           </S.ConfirmPassword>
         </S.InputWrapper>
