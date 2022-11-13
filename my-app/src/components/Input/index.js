@@ -21,6 +21,7 @@ const Input = ({
         disabled={disabled}
         onChange={onChange}
         value={value}
+        hasError={hasError}
         {...restAttributes}
       />
     </S.Wrapper>

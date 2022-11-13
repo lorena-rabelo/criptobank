@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
-export const Input = styled.input`
+export const Input = styled.input(
+  ({ hasError }) => `
   background-color: transparent;
   width: 100%;
   height: 48px;
@@ -13,7 +14,10 @@ export const Input = styled.input`
   &::placeholder {
     color: #cdfc51;
   }
-`;
+
+  ${hasError && `border-color: red; color: red;`}
+`
+);
 
 export const Wrapper = styled.div`
     position: relative;
