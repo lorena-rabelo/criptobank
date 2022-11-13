@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Input from "../../components/Input";
+import InputMask from "react-input-mask";
 
 export const Wrapper = styled.section`
   display: flex;
@@ -10,6 +10,37 @@ export const Wrapper = styled.section`
   width: 60vw;
 `;
 
+export const customCepInput = styled(InputMask)`
+  grid-column: 1/4;
+  background-color: transparent;
+  width: 100%;
+  height: 48px;
+  border: 2px solid #cdfc51;
+  border-radius: 24px;
+  color: #cdfc51;
+  padding: 8px 16px;
+  font-size: 16px;
+
+  &::placeholder {
+    color: #cdfc51;
+  }
+`
+
+export const customCpfInput = styled(InputMask)`
+   grid-column: 1/5;
+  background-color: transparent;
+  width: 100%;
+  height: 48px;
+  border: 2px solid #cdfc51;
+  border-radius: 24px;
+  color: #cdfc51;
+  padding: 8px 16px;
+  font-size: 16px;
+
+  &::placeholder {
+    color: #cdfc51;
+  }
+`
 export const Form = styled.form``;
 
 export const Text = styled.h2`
