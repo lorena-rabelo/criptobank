@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import api from "../../service/api";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import * as S from "./style";
 
