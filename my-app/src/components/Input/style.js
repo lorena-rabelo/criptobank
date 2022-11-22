@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Input = styled.input(
-  ({ hasError }) => `
+  ({ hasError, darkColor }) => `
   background-color: transparent;
   width: 100%;
   height: 48px;
@@ -15,7 +15,16 @@ export const Input = styled.input(
     color: #cdfc51;
   }
 
-  ${hasError && `border-color: red; color: red;`}
+  &:disabled {
+    border-color: #828282;
+    color: #828282;
+    cursor: not-allowed;
+  }
+
+  ${darkColor && `border-color: #201f22; color: #201f22;  &::placeholder {
+    color: #201f22;
+  }`};
+  ${hasError && `border-color: red; color: red;`};
 `
 );
 
