@@ -2,17 +2,27 @@ import React from "react";
 
 import * as S from "./style";
 
-const Button = ({ id, outline, children, disabled, onClick, type }) => {
+const Button = ({
+  id,
+  outline,
+  children,
+  disabled,
+  onClick,
+  type,
+}) => {
   return (
-    <S.BaseButton
-      id={id}
-      type={type}
-      isOutline={outline}
-      isDisabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </S.BaseButton>
+    <>
+      <S.BaseButton
+        id={id}
+        type={type}
+        isOutline={outline}
+        isDisabled={disabled}
+        onClick={onClick}
+        isLoading={isLoading}
+      >
+        {children}
+      </S.BaseButton>
+    </>
   );
 };
 
