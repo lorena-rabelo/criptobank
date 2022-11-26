@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-
+import Loading from "../../components/Loading";
 import cepApi from "../../cepApi";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
@@ -33,7 +33,6 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-
   const data = {
     name: firstName,
     last_name: lastNames,
@@ -51,19 +50,25 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleSuccesfullRegistration()
+    setIsLoading(true);
     await api
       .post(`/api/customer/create`, data)
-      .then((response) => console.log(response.data))
+      .then((response) => {
+        localStorage.setItem("token", response?.data?.data?.token);
+        handleSuccesfullRegistration();
+      })
       .catch((err) => {
         console.error("ops! ocorreu um erro" + err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   const handleSuccesfullRegistration = () => {
-    alert("Seu cadastro foi realizado com sucesso")
+    alert("Seu cadastro foi realizado com sucesso");
     navigate("/dashboard");
-  }
+  };
 
   const getAddress = async () => {
     await cepApi
@@ -82,7 +87,9 @@ const Register = () => {
     return;
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <S.Wrapper>
       <S.Form onSubmit={handleSubmit}>
         <S.Text>Cadastre-se no Criptobank</S.Text>
@@ -93,7 +100,7 @@ const Register = () => {
               type="text"
               placeholder="nome"
               value={firstName}
-              onChange={e => setFirstName(e.target.value)}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </S.Name>
           <S.LastNames>
@@ -101,33 +108,37 @@ const Register = () => {
               type="text"
               placeholder="sobrenome(s)"
               value={lastNames}
-              onChange={e => setLastNames(e.target.value)}
+              onChange={(e) => setLastNames(e.target.value)}
             />
           </S.LastNames>
           <S.Cpf>
             <S.customCpfInput
-            mask="999.999.999-99"
+              mask="999.999.999-99"
               type="text"
               placeholder="cpf"
-              value={cpf || ''}
-              onChange={e => setCpf(e.target.value)}
+              value={cpf || ""}
+              onChange={(e) => setCpf(e.target.value)}
             />
           </S.Cpf>
 
           <S.Birthday>
             <Input
-              // ref={dateRef}
               type="date"
               placeholder="data de nascimento"
               value={birthdayDate}
-              onChange={e => setBirthdayDate(e.target.value)}
+              onChange={(e) => setBirthdayDate(e.target.value)}
             />
           </S.Birthday>
         </S.InputWrapper>
 
         <S.InputWrapper>
           <S.Cep>
-          <S.customCepInput mask="99999-999"  value={cep || ''}  onChange={e => setCep(e.target.value)} onBlur={getAddress}/>
+            <S.customCepInput
+              mask="99999-999"
+              value={cep || ""}
+              onChange={(e) => setCep(e.target.value)}
+              onBlur={getAddress}
+            />
             <S.CustomLink
               href="https://buscacepinter.correios.com.br/"
               target="_blank"
@@ -140,7 +151,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="endereço"
-              value={address || ''}
+              value={address || ""}
               onChange={({ target }) => setAddress(target.value)}
             />
           </S.Address>
@@ -148,7 +159,7 @@ const Register = () => {
             <Input
               type="number"
               placeholder="nº"
-              value={number || ''}
+              value={number || ""}
               onChange={({ target }) => setNumber(target.value)}
             />
           </S.Number>
@@ -156,7 +167,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="complemento"
-              value={complement || ''}
+              value={complement || ""}
               onChange={({ target }) => setComplement(target.value)}
             />
           </S.Complement>
@@ -164,7 +175,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="cidade"
-              value={city || ''}
+              value={city || ""}
               onChange={({ target }) => setCity(target.value)}
             />
           </S.City>
@@ -172,7 +183,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="estado"
-              value={state || ''}
+              value={state || ""}
               onChange={({ target }) => setState(target.value)}
             />
           </S.State>
@@ -183,7 +194,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="email"
-              value={email || ''}
+              value={email || ""}
               onChange={({ target }) => setEmail(target.value)}
             />
           </S.Email>
@@ -191,7 +202,7 @@ const Register = () => {
             <Input
               type="password"
               placeholder="crie sua senha"
-              value={password || ''}
+              value={password || ""}
               onChange={({ target }) => setPassword(target.value)}
             />
           </S.Password>
@@ -199,13 +210,17 @@ const Register = () => {
             <Input
               type="password"
               placeholder="repita a senha"
-              value={confirmPassword || ''}
+              value={confirmPassword || ""}
               onChange={({ target }) => setConfirmPassword(target.value)}
               onBlur={validatePassword}
             />
           </S.ConfirmPassword>
         </S.InputWrapper>
-        <Button type="submit"  disabled={disabled || isLoading} isLoading={isLoading}>
+        <Button
+          type="submit"
+          disabled={disabled || isLoading}
+          isLoading={isLoading}
+        >
           Cadastrar
         </Button>
       </S.Form>
@@ -214,5 +229,3 @@ const Register = () => {
 };
 
 export default Register;
-
-
