@@ -1,12 +1,14 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import InputMask from "react-input-mask";
 
 export const Dashboard = styled.section`
   display: flex;
   flex-direction: column;
   align-self: center;
   text-align: center;
-  width: 1024px;
+  min-width: 1024px;
+  max-width: 1024px;
   height: 90vh;
   border-radius: 50px;
   background-color: #f3f3f3;
@@ -21,6 +23,12 @@ export const TransactionsWrapper = styled.div`
 export const Transaction = styled.div`
   display: flex;
   justify-content: space-between;
+  font-size: 16px;
+
+  > span {
+    padding: 8px 0;
+    background-color: red;
+  }
 `;
 
 export const PersonalInfo = styled.aside`
@@ -167,10 +175,45 @@ export const CustomSelect = styled.select`
   appearance: none;
 `;
 
+export const CustomInput = styled(InputMask)`
+  background-color: transparent;
+  width: 100%;
+  height: 48px;
+  border: 2px solid #201f22;
+  border-radius: 24px;
+  color: #201f22;
+  padding: 8px 16px;
+  font-size: 16px;
+
+  &::placeholder {
+    color: #201f22;
+  }
+`;
+
 export const CloseButton = styled.span`
   position: absolute;
   right: 20px;
   top: 20px;
+`;
+
+export const Type = styled.span`
+  font-size: 16px;
+  color: black;
+  font-weight: 500;
+`;
+
+export const Data = styled.span`
+  font-size: 16px;
+  color: #201f22;
+  font-weight: 700;
+`;
+
+export const ItemWrapper = styled.div`
+  display: flex;
+  width: 30%;
+  justify-content: space-between;
+  padding: 8px 0;
+  ${props => (props.isChecked ? `color: #1f8e53;` : `color: #f54337;`)}
 `;
 
 export const ContentForm = styled.form`

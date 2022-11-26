@@ -18,11 +18,20 @@ const Dashboard = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showCreateAccountModal, setCreateAccountModal] = useState(false);
 
+  const [selectedInitialAccount, setSelectedInitialAccount] = useState();
+  const [selectedFinalAccount, setSelectedFinalAccount] = useState();
+  const [transferValue, setTransferValue] = useState();
+
+  const [newAccountValue, setNewAccountValue] = useState(0.0);
+
+  const [selectedAccount, setSelectedAccount] = useState();
+
+  //? user data
   useEffect(() => {
     api
       .get("/api/customer/user", {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
@@ -36,62 +45,124 @@ const Dashboard = () => {
       });
   }, []);
 
-  useEffect(() => {
+  const getAccounts = () =>
     api
       .get("api/account/accountList", {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
         setAccountsList(response.data);
+        setSelectedAccount(response.data[0]?.account_number);
+        console.log(
+          "response.data[0]?.account_number: ",
+          response.data[0]?.account_number
+        );
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro : " + err);
       });
+
+  //? account list
+  useEffect(() => {
+    getAccounts();
   }, []);
 
+  //! transactions list
   useEffect(() => {
     api
       .get(`api/account/transactions/${accountsList[0]?.account_number}`, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
-        console.log("response: transactions info ", response);
         setAccountInfo(response.data);
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro : " + err);
       });
-  }, [accountsList]);
-
-  // useEffect(() => {
-  //   console.log('accounts[0]: ', accounts[0]);
-  // }, [accounts]);
+  }, [selectedAccount]);
 
   const handleLogout = () => {
     api
       .delete("/api/customer/delete", {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
         console.log("response: transactions info ", response);
-        //!  ver o código de sucesso;
         navigate("/");
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro : " + err);
-        sessionStorage.removeItem("token");
-        navigate("/");
+        localStorage.removeItem("token");
       });
   };
 
-  const handleTransfer = () => {
-    console.log("transferiu");
+  const handleCreateAccount = (e) => {
+    e.preventDefault();
+
+    api
+      .post(
+        `/api/account/create`,
+        { balance: newAccountValue },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(() => {
+        setCreateAccountModal(false);
+        setNewAccountValue(0);
+        alert("Sua conta foi criada com sucesso");
+      })
+      .catch((err) => {
+        console.error("ops! ocorreu um erro : " + err);
+      });
+  };
+
+  const handleTransfer = (e) => {
+    e.preventDefault();
+
+    api
+      .post(
+        `/api/account/transfer`,
+        {
+          balance: transferValue,
+          originAccount: selectedInitialAccount.toString(),
+          destinationAccount: selectedFinalAccount.toString(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(() => {
+        alert("Sua transferência foi realizada com sucesso");
+      })
+      .catch((err) => {
+        console.error("ops! ocorreu um erro : " + err);
+      })
+      .finally(() => {
+        setShowTransferModal(false);
+      });
+  };
+
+  const handleInitialAccount = (e) => {
+    console.log("SelectedInitialAccount: ", selectedInitialAccount);
+    setSelectedInitialAccount(e.target.value);
+  };
+
+  const formatToCurrency = (value) => {
+    return Number(value).toLocaleString("pt-br", {
+      style: "currency",
+      currency: "BRL",
+    });
   };
 
   return isLoading ? (
@@ -102,6 +173,7 @@ const Dashboard = () => {
         <S.Avatar />
         <span>{`Olá, ${name}`}</span>
         <S.EditInfo to="/edit">Editar informações</S.EditInfo>
+        <S.EditInfo to="/edit">Excluir conta</S.EditInfo>
 
         <S.CustomButton onClick={handleLogout}> Sair </S.CustomButton>
       </S.PersonalInfo>
@@ -109,7 +181,9 @@ const Dashboard = () => {
         <div>
           <S.NewAccountWrapper>
             <div>
-              <S.CreateNewAccountButton onClick={() => console.log("ratanaba")}>
+              <S.CreateNewAccountButton
+                onClick={() => setCreateAccountModal(true)}
+              >
                 +
               </S.CreateNewAccountButton>
               <span>Criar nova conta</span>
@@ -134,12 +208,7 @@ const Dashboard = () => {
                   <img src={trash} />
                 </S.DeleteAccountButton>
                 <span>{`nº ${item.account_number}`}</span>
-                <S.AccountValue>
-                  {item.balance.toLocaleString("pt-br", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </S.AccountValue>
+                <S.AccountValue>{formatToCurrency(item?.balance)}</S.AccountValue>
               </S.Account>
             ))}
           </S.AccountsWrapper>
@@ -147,15 +216,47 @@ const Dashboard = () => {
           <S.TransactionsWrapper>
             <span>Transações</span>
             <hr></hr>
-            <S.Transaction>
-              <span>tipo</span>
-              <span>{accountInfo[0]?.transaction_type}</span>
-              <span>valor</span>
-              <span>{accountInfo[0]?.value}</span>
-            </S.Transaction>
+            {accountInfo?.map((item) => {
+              return (
+                <S.Transaction>
+                  <S.ItemWrapper>
+                    <S.Type>tipo</S.Type>
+                    <S.Data>{item?.transaction_type}</S.Data>
+                  </S.ItemWrapper>
+                  <S.ItemWrapper>
+                    <S.Type>valor</S.Type>
+                    <S.Data>{formatToCurrency(item?.value)}</S.Data>
+                  </S.ItemWrapper>
+                </S.Transaction>
+              );
+            })}
           </S.TransactionsWrapper>
         </div>
       </S.Dashboard>
+
+      {showCreateAccountModal && (
+        <S.ModalWrapper>
+          <S.Content role="dialog" aria-modal={showCreateAccountModal}>
+            <S.CloseButton onClick={() => setCreateAccountModal(false)}>
+              x
+            </S.CloseButton>
+            <span>Criar conta</span>
+            <form onSubmit={handleCreateAccount}>
+              <S.ContentForm>
+                <span>valor inicial</span>
+                <S.CustomInput
+                  mask="999,99"
+                  type="text"
+                  placeholder="valor inicial"
+                  value={newAccountValue}
+                  onChange={(e) => setNewAccountValue(e.target.value)}
+                />
+              </S.ContentForm>
+              <Button type="submit">Criar conta</Button>
+            </form>
+          </S.Content>
+        </S.ModalWrapper>
+      )}
 
       {showTransferModal && (
         <S.ModalWrapper>
@@ -166,19 +267,27 @@ const Dashboard = () => {
             <span>Transferência entre contas</span>
             <form onSubmit={handleTransfer}>
               <S.ContentForm>
-                <S.CustomSelect name="select">
+                <S.CustomSelect name="select" onChange={handleInitialAccount}>
                   <option value="" selected>
                     Escolha uma conta de saída
                   </option>
                   {accountsList.map((item) => (
-                    <option value={item.id}>{item.account_number}</option>
+                    <option value={item.account_number}>
+                      {item.account_number}
+                    </option>
                   ))}
                 </S.CustomSelect>
-                <Input darkColor type="text" placeholder="conta"></Input>
+                <Input
+                  darkColor
+                  type="text"
+                  placeholder="conta"
+                  onChange={(e) => setSelectedFinalAccount(e.target.value)}
+                ></Input>
                 <Input
                   darkColor
                   type="text"
                   placeholder="valor a transferir"
+                  onChange={(e) => setTransferValue(e.target.value)}
                 ></Input>
               </S.ContentForm>
               <Button type="submit">Transferir</Button>
