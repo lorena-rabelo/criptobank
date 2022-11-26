@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate} from "react-router-dom";
 import cepApi from "../../cepApi";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
@@ -7,7 +8,7 @@ import Loading from "../../components/Loading";
 
 import * as S from "./style";
 
-const Register = () => {
+const EditPersonalInfo = () => {
   const [firstName, setFirstName] = useState("");
   const [lastNames, setLastNames] = useState("");
   const [birthdayDate, setBirthdayDate] = useState("");
@@ -20,12 +21,13 @@ const Register = () => {
   const [state, setState] = useState("");
   const [complement, setComplement] = useState("");
 
-
   const [email, setEmail] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const nameRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -35,45 +37,54 @@ const Register = () => {
         },
       })
       .then((response) => {
-        setFirstName(response.data.name)
-        setLastNames(response.data.last_name)
-        setBirthdayDate(response.data.birth_date)
-        setCpf(response.data.taxvat)
-        setCep(response.data.post_code)
-        setAddress(response.data.street)
-        setNumber(response.data.street_number)
-        setComplement(response.data.complement)
-        setCity(response.data.city)
-        setState(response.data.state)
-        setEmail(response.data.email)
+        setFirstName(response.data.name);
+        setLastNames(response.data.last_name);
+        setBirthdayDate(response.data.birth_date);
+        setCpf(response.data.taxvat);
+        setCep(response.data.post_code);
+        setAddress(response.data.street);
+        setNumber(response.data.street_number);
+        setComplement(response.data.complement);
+        setCity(response.data.city);
+        setState(response.data.state);
+        setEmail(response.data.email);
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro : " + err);
-      }).finally(() => {
-        setIsLoading(false)
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
   const data = {
     name: firstName,
     last_name: lastNames,
-    taxvat: cpf,
-    street: "Rua Teste 4",
-    street_number: "123",
-    complement: !!complement || 'N/A',
-    post_code: "09570-163",
-    city: "São Caetano",
-    state: "SP",
-    birth_date: "18/01/1991",
     email: email,
-    password: "Teste1234",
+    street: address,
+    street_number: number,
+    complement: complement,
+    post_code: cep,
+    city: city,
+    state: state,
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await api
-      .post(`/api/customer/create`, data)
-      .then((response) => console.log(response.data))
+      .put(
+        `/api/customer/edit`,
+        { ...data },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(() => {
+        alert("Seu cadastro foi atualizado com sucesso")
+        navigate("/dashboard");
+      })
       .catch((err) => {
         console.error("ops! ocorreu um erro" + err);
       });
@@ -100,36 +111,27 @@ const Register = () => {
         <S.InputWrapper>
           <S.Name>
             <Input
-              disabled
               ref={nameRef}
               type="text"
               placeholder="nome"
               value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </S.Name>
           <S.LastNames>
             <Input
-             disabled
               type="text"
               placeholder="sobrenome(s)"
               value={lastNames}
+              onChange={(e) => setLastNames(e.target.value)}
             />
           </S.LastNames>
           <S.Cpf>
-            <Input
-             disabled
-              type="text"
-              placeholder="cpf"
-              value={cpf || ''}
-            />
+            <Input disabled type="text" placeholder="cpf" value={cpf || ""} />
           </S.Cpf>
 
           <S.Birthday>
-            <Input
-             disabled
-              type="text"
-              value={birthdayDate}
-            />
+            <Input disabled type="text" value={birthdayDate} />
           </S.Birthday>
         </S.InputWrapper>
 
@@ -138,8 +140,8 @@ const Register = () => {
             <Input
               type="text"
               placeholder="cep"
-              value={cep || ''}
-              onChange={e => setCep(e.target.value)}
+              value={cep || ""}
+              onChange={(e) => setCep(e.target.value)}
               onBlur={getAddress}
             />
             <S.CustomLink
@@ -154,7 +156,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="endereço"
-              value={address || ''}
+              value={address || ""}
               onChange={({ target }) => setAddress(target.value)}
             />
           </S.Address>
@@ -162,7 +164,7 @@ const Register = () => {
             <Input
               type="number"
               placeholder="nº"
-              value={number || ''}
+              value={number || ""}
               onChange={({ target }) => setNumber(target.value)}
             />
           </S.Number>
@@ -170,7 +172,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="complemento"
-              value={complement || ''}
+              value={complement || ""}
               onChange={({ target }) => setComplement(target.value)}
             />
           </S.Complement>
@@ -178,7 +180,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="cidade"
-              value={city || ''}
+              value={city || ""}
               onChange={({ target }) => setCity(target.value)}
             />
           </S.City>
@@ -186,7 +188,7 @@ const Register = () => {
             <Input
               type="text"
               placeholder="estado"
-              value={state || ''}
+              value={state || ""}
               onChange={({ target }) => setState(target.value)}
             />
           </S.State>
@@ -197,12 +199,12 @@ const Register = () => {
             <Input
               type="text"
               placeholder="email"
-              value={email || ''}
+              value={email || ""}
               onChange={({ target }) => setEmail(target.value)}
             />
           </S.Email>
         </S.InputWrapper>
-        <Button type="submit"  disabled={isLoading} isLoading={isLoading}>
+        <Button type="submit" disabled={isLoading} isLoading={isLoading}>
           Atualizar
         </Button>
       </S.Form>
@@ -210,4 +212,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default EditPersonalInfo;
