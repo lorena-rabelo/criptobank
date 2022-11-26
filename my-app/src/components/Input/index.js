@@ -11,7 +11,7 @@ const Input = ({
   hasError,
   errorMessage,
   onChange,
-
+  darkColor,
   ...restAttributes
 }) => {
   return (
@@ -22,6 +22,8 @@ const Input = ({
         disabled={disabled}
         onChange={onChange}
         value={value}
+        hasError={hasError}
+        darkColor={darkColor}
         {...restAttributes}
       />
     </S.Wrapper>
