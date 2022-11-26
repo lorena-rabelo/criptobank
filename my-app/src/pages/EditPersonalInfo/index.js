@@ -33,7 +33,7 @@ const EditPersonalInfo = () => {
     api
       .get("/api/customer/user", {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
@@ -77,7 +77,7 @@ const EditPersonalInfo = () => {
         { ...data },
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       )
