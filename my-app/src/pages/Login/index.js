@@ -17,8 +17,8 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    setIsLoading(true)
     e.preventDefault();
+    setIsLoading(true)
     setError(false);
     api
       .post(`/api/customer/login`, {
@@ -26,7 +26,7 @@ const Login = () => {
         password: password,
       })
       .then((res) => {
-        sessionStorage.setItem("token", res.data.data.token);
+        localStorage.setItem("token", res.data.data.token);
         navigate("/dashboard");
       })
       .catch((err) => {

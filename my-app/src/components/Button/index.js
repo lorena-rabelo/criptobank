@@ -18,7 +18,6 @@ const Button = ({
         isOutline={outline}
         isDisabled={disabled}
         onClick={onClick}
-        isLoading={isLoading}
       >
         {children}
       </S.BaseButton>
